@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Farmers{% endblock %}
+{% block heading %}Farmer Registration{% endblock %}
+{% block subtitle %}Register and manage milk suppliers{% endblock %}
+{% block body %}
+<div class="card">
+  <h3>Register new farmer</h3>
+  <form method="post" class="form-grid">
+    <div><label>Farmer code</label><input type="text" name="code" value="{{ next_code }}" required></div>
+    <div><label>Full name</label><input type="text" name="name" required></div>
+    <div><label>Village</label><input type="text" name="village"></div>
+    <div><label>Mobile</label><input type="text" name="phone" placeholder="10 digits" maxlength="10"></div>
+    <div><label>Animal type</label>
+      <select name="animal_type"><option>Cow</option><option>Buffalo</option></select></div>
+    <div><label>Bank account no.</label><input type="text" name="bank_account"></div>
+    <div></div>
+    <div class="btn-end"><button class="btn" type="submit">Register Farmer</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Registered farmers</h3>
+  <input type="text" id="search" class="search" placeholder="Search by name, code or village">
+  <table id="farmer-table">
+    <thead><tr><th>Code</th><th>Name</th><th>Village</th><th>Mobile</th><th>Animal</th><th>Joined</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for f in farmers %}
+      <tr>
+        <td>{{ f.code }}</td><td>{{ f.name }}</td><td>{{ f.village }}</td><td>{{ f.phone }}</td>
+        <td><span class="badge {{ 'cow' if f.animal_type == 'Cow' else 'buffalo' }}">{{ f.animal_type }}</span></td>
+        <td>{{ f.joined_on }}</td>
+        <td><span class="badge {{ 'active' if f.active else 'inactive' }}">{{ 'Active' if f.active else 'Inactive' }}</span></td>
+        <td>
+          <form method="post" action="{{ url_for('toggle_farmer', farmer_id=f.id) }}">
+            <button class="btn-outline" type="submit">{{ 'Deactivate' if f.active else 'Activate' }}</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // simple live search: hide rows that do not contain the typed text
+  document.getElementById("search").addEventListener("input", function () {
+    var text = this.value.toLowerCase();
+    document.querySelectorAll("#farmer-table tbody tr").forEach(function (row) {
+      row.style.display = row.innerText.toLowerCase().includes(text) ? "" : "none";
+    });
+  });
+</script>
+{% endblock %}

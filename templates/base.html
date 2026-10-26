@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Dairy Manager{% endblock %} - Dairy Management System</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-name">🥛 Dairy Manager</div>
+      <div class="brand-sub">{{ dairy_name }}</div>
+    </div>
+    <nav>
+      {% set ep = request.endpoint %}
+      <a href="{{ url_for('dashboard') }}" class="{{ 'active' if ep == 'dashboard' }}">Dashboard</a>
+      <a href="{{ url_for('farmers') }}" class="{{ 'active' if ep == 'farmers' }}">Farmers</a>
+      <a href="{{ url_for('milk') }}" class="{{ 'active' if ep == 'milk' }}">Milk Collection</a>
+      <a href="{{ url_for('payments') }}" class="{{ 'active' if ep == 'payments' }}">Farmer Payments</a>
+      <a href="{{ url_for('products') }}" class="{{ 'active' if ep == 'products' }}">Products &amp; Stock</a>
+      <a href="{{ url_for('sales') }}" class="{{ 'active' if ep in ('sales','bill') }}">Sales &amp; Billing</a>
+      <a href="{{ url_for('reports') }}" class="{{ 'active' if ep == 'reports' }}">Reports</a>
+      <a href="{{ url_for('settings') }}" class="{{ 'active' if ep == 'settings' }}">Rate Settings</a>
+      <div class="nav-line"></div>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <header class="topbar">
+      <div>
+        <h1>{% block heading %}{% endblock %}</h1>
+        <p class="subtitle">{% block subtitle %}{% endblock %}</p>
+      </div>
+      <div class="logged">Logged in as <strong>{{ full_name }}</strong></div>
+    </header>
+
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+
+    {% block body %}{% endblock %}
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Sales & Billing{% endblock %}
+{% block heading %}Sales &amp; Billing{% endblock %}
+{% block subtitle %}Sell dairy products and generate bills — stock is reduced automatically{% endblock %}
+{% block body %}
+<div class="card">
+  <h3>New bill</h3>
+  <form method="post">
+    <label>Customer</label>
+    <select name="customer_id" class="auto">
+      <option value="">Walk-in customer</option>
+      {% for c in customers %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+    </select>
+
+    <table class="bill-lines">
+      <thead><tr><th>Product</th><th>Quantity</th></tr></thead>
+      <tbody>
+      {% for i in (1, 2, 3) %}
+      <tr>
+        <td><select name="product_{{ i }}">
+              <option value="">— select product —</option>
+              {% for p in products %}<option value="{{ p.id }}">{{ p.name }} — ₹{{ '%.2f'|format(p.price) }}/{{ p.unit }} (stock {{ p.stock|num }})</option>{% endfor %}
+            </select></td>
+        <td><input type="number" step="0.1" min="0.1" name="qty_{{ i }}" class="small"></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <button class="btn" type="submit">Generate Bill</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Recent bills</h3>
+  <table>
+    <thead><tr><th>Bill no.</th><th>Date</th><th>Customer</th><th class="r">Total (₹)</th></tr></thead>
+    <tbody>
+    {% for s in recent %}
+      <tr><td><a href="{{ url_for('bill', sale_id=s.id) }}">#{{ s.id }}</a></td><td>{{ s.sale_date }}</td>
+          <td>{{ s.customer or 'Walk-in' }}</td><td class="r">{{ s.total|money }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

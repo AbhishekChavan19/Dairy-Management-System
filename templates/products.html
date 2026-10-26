@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Products & Stock{% endblock %}
+{% block heading %}Products &amp; Stock{% endblock %}
+{% block subtitle %}Dairy products, prices and available stock{% endblock %}
+{% block body %}
+<div class="card">
+  <h3>Add product</h3>
+  <form method="post" class="form-grid">
+    <div><label>Product name</label><input type="text" name="name" required></div>
+    <div><label>Unit</label>
+      <select name="unit"><option>Litre</option><option>Kg</option><option>Packet</option><option>Piece</option></select></div>
+    <div><label>Price (₹)</label><input type="number" step="0.01" min="0.01" name="price" required></div>
+    <div><label>Opening stock</label><input type="number" step="0.1" min="0" name="stock" value="0"></div>
+    <div></div><div></div><div></div>
+    <div class="btn-end"><button class="btn" type="submit">Add Product</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Product list</h3>
+  <table>
+    <thead><tr><th>Product</th><th>Unit</th><th class="r">Price (₹)</th><th class="r">Stock</th><th>Status</th><th>Add stock</th></tr></thead>
+    <tbody>
+    {% for p in products %}
+      <tr>
+        <td>{{ p.name }}</td><td>{{ p.unit }}</td><td class="r">{{ p.price|money }}</td><td class="r">{{ p.stock|num }}</td>
+        <td>{% if p.stock < low %}<span class="badge low">Low</span>{% else %}<span class="badge active">In stock</span>{% endif %}</td>
+        <td>
+          <form method="post" action="{{ url_for('add_stock', product_id=p.id) }}" class="inline">
+            <input type="number" step="0.1" min="0.1" name="qty" class="small" required>
+            <button class="btn btn-small" type="submit">Add</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

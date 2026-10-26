@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login - Dairy Management System</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page">
+  <div class="login-card">
+    <h2>🥛 Dairy Management System</h2>
+    <p class="login-sub">Sign in to manage milk collection, payments and sales</p>
+
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+
+    <form method="post">
+      <label>Username</label>
+      <input type="text" name="username" required autofocus>
+      <label>Password</label>
+      <input type="password" name="password" required>
+      <button class="btn btn-block" type="submit">Sign In</button>
+    </form>
+    <p class="login-hint">Default login: nikhilchavan / dairy@123</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Bill #{{ sale.id }}{% endblock %}
+{% block heading %}Bill #{{ sale.id }}{% endblock %}
+{% block subtitle %}{{ dairy_name }} · {{ sale.sale_date }}{% endblock %}
+{% block body %}
+<div class="card">
+  <p><strong>Customer:</strong> {{ sale.customer or 'Walk-in customer' }}
+     {% if sale.phone %}· {{ sale.phone }}{% endif %}</p>
+  <table>
+    <thead><tr><th>Product</th><th>Unit</th><th class="r">Quantity</th><th class="r">Price (₹)</th><th class="r">Amount (₹)</th></tr></thead>
+    <tbody>
+    {% for i in items %}
+      <tr><td>{{ i.name }}</td><td>{{ i.unit }}</td><td class="r">{{ i.quantity|num }}</td><td class="r">{{ i.price|money }}</td><td class="r">{{ i.amount|money }}</td></tr>
+    {% endfor %}
+      <tr class="total-row"><td colspan="4">Total</td><td class="r">{{ sale.total|money }}</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:16px">
+    <button class="btn" onclick="window.print()">Print Bill</button>
+    <a href="{{ url_for('sales') }}" class="btn-outline link">Back</a>
+  </p>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block heading %}Reports{% endblock %}
+{% block subtitle %}Monthly collection summary, farmer-wise statement and profit overview{% endblock %}
+{% block body %}
+<div class="card">
+  <form method="get" class="form-grid period">
+    <div><label>Month</label><input type="month" name="month" value="{{ month }}" required></div>
+    <div></div>
+    <div class="btn-end"><button class="btn" type="submit">Show Report</button></div>
+  </form>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-label">Total milk collected</div><div class="stat-value green">{{ litres|round|int }} L</div></div>
+  <div class="stat"><div class="stat-label">Purchase cost (farmers)</div><div class="stat-value blue">₹ {{ cost|round|int }}</div></div>
+  <div class="stat"><div class="stat-label">Product sales</div><div class="stat-value orange">₹ {{ product_sales|round|int }}</div></div>
+  <div class="stat"><div class="stat-label">Collection days</div><div class="stat-value">{{ days }}</div></div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>Daily collection summary</h3>
+    <table>
+      <thead><tr><th>Date</th><th class="r">Entries</th><th class="r">Litres</th><th class="r">Avg Fat</th><th class="r">Amount (₹)</th></tr></thead>
+      <tbody>
+      {% for d in daily %}
+        <tr><td>{{ d.coll_date }}</td><td class="r">{{ d.entries }}</td><td class="r">{{ d.litres|round(1) }}</td><td class="r">{{ '%.2f'|format(d.avg_fat) }}</td><td class="r">{{ d.amount|money }}</td></tr>
+      {% else %}
+        <tr><td colspan="5" class="muted">No data for this month.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>Farmer-wise statement</h3>
+    <table>
+      <thead><tr><th>Farmer</th><th class="r">Litres</th><th class="r">Amount (₹)</th></tr></thead>
+      <tbody>
+      {% for f in by_farmer %}
+        <tr><td>{{ f.code }} {{ f.name }}<div class="village">{{ f.village }}</div></td><td class="r">{{ f.litres|round(1) }}</td><td class="r">{{ f.amount|money }}</td></tr>
+      {% else %}
+        <tr><td colspan="3" class="muted">No data for this month.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

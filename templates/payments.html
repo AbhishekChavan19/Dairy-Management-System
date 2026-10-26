@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Farmer Payments{% endblock %}
+{% block heading %}Farmer Payments{% endblock %}
+{% block subtitle %}Period-wise milk bills and payment records{% endblock %}
+{% block body %}
+<div class="card">
+  <h3>Select billing period</h3>
+  <form method="get" class="form-grid period">
+    <div><label>From</label><input type="date" name="date_from" value="{{ date_from }}" required></div>
+    <div><label>To</label><input type="date" name="date_to" value="{{ date_to }}" required></div>
+    <div class="btn-end"><button class="btn" type="submit">Generate Bills</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Milk bills: {{ date_from }} to {{ date_to }}</h3>
+  <table>
+    <thead><tr><th>Code</th><th>Farmer</th><th class="r">Litres</th><th class="r">Avg Fat</th><th class="r">Avg SNF</th><th class="r">Gross (₹)</th><th>Deduction (₹)</th><th>Mode</th><th></th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      {% set b = r.bill %}
+      <tr>
+        <td>{{ b.code }}</td><td>{{ b.name }}</td>
+        <td class="r">{{ b.litres|round(1) }}</td><td class="r">{{ '%.2f'|format(b.avg_fat) }}</td><td class="r">{{ '%.2f'|format(b.avg_snf) }}</td>
+        <td class="r">{{ b.gross|money }}</td>
+        {% if r.paid %}
+          <td>{{ r.paid.deduction|money }}</td><td>{{ r.paid.mode }}</td>
+          <td><span class="badge active">Paid</span></td>
+        {% else %}
+          <td><input form="pay-{{ b.id }}" type="number" step="0.01" min="0" name="deduction" value="0" class="small"></td>
+          <td><select form="pay-{{ b.id }}" name="mode" class="small"><option>Cash</option><option>Bank</option><option>UPI</option></select></td>
+          <td>
+            <form id="pay-{{ b.id }}" method="post" action="{{ url_for('pay') }}">
+              <input type="hidden" name="farmer_id" value="{{ b.id }}">
+              <input type="hidden" name="date_from" value="{{ date_from }}">
+              <input type="hidden" name="date_to" value="{{ date_to }}">
+              <button class="btn btn-small" type="submit">Pay</button>
+            </form>
+          </td>
+        {% endif %}
+      </tr>
+    {% else %}
+      <tr><td colspan="9" class="muted">No milk entries in this period.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Recent payments</h3>
+  <table>
+    <thead><tr><th>Paid on</th><th>Farmer</th><th>Period</th><th class="r">Gross</th><th class="r">Deduction</th><th class="r">Net paid (₹)</th><th>Mode</th></tr></thead>
+    <tbody>
+    {% for p in recent %}
+      <tr><td>{{ p.paid_on }}</td><td>{{ p.code }} — {{ p.name }}</td><td>{{ p.period_from }} → {{ p.period_to }}</td>
+          <td class="r">{{ p.gross_amount|money }}</td><td class="r">{{ p.deduction|money }}</td><td class="r">{{ p.net_amount|money }}</td><td>{{ p.mode }}</td></tr>
+    {% else %}
+      <tr><td colspan="7" class="muted">No payments yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

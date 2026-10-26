@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block heading %}Dashboard{% endblock %}
+{% block subtitle %}Today's overview · {{ today }}{% endblock %}
+{% block body %}
+<div class="stats">
+  <div class="stat"><div class="stat-label">Milk collected today</div><div class="stat-value green">{{ litres|num }} L</div></div>
+  <div class="stat"><div class="stat-label">Payable to farmers today</div><div class="stat-value blue">₹ {{ payable|round|int }}</div></div>
+  <div class="stat"><div class="stat-label">Sales today</div><div class="stat-value orange">₹ {{ sales_today|round|int }}</div></div>
+  <div class="stat"><div class="stat-label">Active farmers</div><div class="stat-value">{{ active }}</div></div>
+</div>
+
+<div class="grid-2-1">
+  <div class="card">
+    <h3>Milk collection — last 7 days (litres)</h3>
+    <div class="bars">
+      {% for d in days %}
+      <div class="bar-col">
+        <div class="bar-value">{{ d.litres }}</div>
+        <div class="bar" style="height: {{ d.height }}%"></div>
+        <div class="bar-label">{{ d.label }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="card">
+    <h3>Low stock alert</h3>
+    <table>
+      <thead><tr><th>Product</th><th class="r">Stock</th></tr></thead>
+      <tbody>
+      {% for p in low_stock %}
+        <tr><td>{{ p.name }}</td><td class="r">{{ p.stock|num }} {{ p.unit }}</td></tr>
+      {% else %}
+        <tr><td colspan="2" class="muted">All products have enough stock.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Top suppliers this week</h3>
+  <table>
+    <thead><tr><th>Code</th><th>Farmer</th><th class="r">Litres</th><th class="r">Amount (₹)</th></tr></thead>
+    <tbody>
+    {% for t in top %}
+      <tr><td>{{ t.code }}</td><td>{{ t.name }}</td><td class="r">{{ t.litres|round(1) }}</td><td class="r">{{ t.amount|money }}</td></tr>
+    {% else %}
+      <tr><td colspan="4" class="muted">No collection data yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
